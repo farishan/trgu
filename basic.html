@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		* {
+			outline: none;
+			user-select: none;
+		}
+
+		body {
+			font-size: 14px;
+		}
+
+		.game {
+			width: 400px;
+			height: 300px;
+			border: 1px solid;
+		}
+
+		.board {
+			width: 98%;
+			height: 80px;
+			border: 1px solid orange;
+			margin: auto;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.board .tile {
+			width: 70px;
+			height: 70px;
+			border: 1px solid yellow;
+			display: inline-flex;
+			vertical-align: top;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.piece {
+			width: 20px;
+			height: 20px;
+			background-color: black;
+			color: white;
+			animation: popup .5s cubic-bezier(0, 1, 1, .60);
+		}
+
+		@keyframes popup {
+			0% {transform: scale(1);}
+			75% {transform: scale(1.5);}
+			90% {transform: scale(0.8);}
+			100% {transform: scale(1);}
+		}
+
+		.logger {
+			background-color: #eee;
+			padding: .25rem;
+		}
+
+		#coin {
+			margin: 1rem;
+			padding: 1rem;
+			border: inset 2px solid;
+			background-color: gold;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+
+		#restart {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="game">
+		<div class="board" id="board">board</div>
+		<button id="coin">toss</button>
+		<span class="logger" id="logger">log</span>
+		<button id="restart">restart</button>
+	</div>
+
+	<script>
+		
+		var h_coin = document.getElementById('coin');
+		var h_logger = document.getElementById('logger');
+		var h_board = document.getElementById('board');
+		var h_restart = document.getElementById('restart');
+		var player;
+		var board;
+
+		var defaultData = {
+			player: {
+				piece: null
+			},
+			board: [0, 0, 0, 0, 0, 0, 0, 0]
+		}
+		
+		window.onload = (function(){
+			setupCharacter();
+			setupBoard();
+			setupListener();
+			logging('toss the coin')
+		})();
+
+		function Piece(data){
+			this.position = data.position;
+			this.direction = true;
+			this.ava = '<div class="piece" id="piece">p</div>';
+			this.move = function(){
+				pieceMove(this);
+			}
+
+			return this;
+		}
+
+		function pieceMove(self){
+			if(self){
+				board[self.position] = 0;
+				if(self.position+1<board.length && self.direction){
+					self.direction = true;
+				}else{
+					self.direction = false;
+				}
+
+				if(self.direction){
+					self.position++;
+				}else{
+					self.position--;
+					if(self.position==-1){
+						setTimeout(function(){
+							logging('you win!');
+							h_restart.style.display = 'block';
+							h_coin.style.display = 'none';
+						}, 500);
+					}
+				}
+				board[self.position] = self;
+			}
+		}
+
+		function setupCharacter(){
+			player = JSON.parse(JSON.stringify(defaultData.player));
+			player.piece = new Piece({
+				position: -1
+			});
+		}
+
+		function setupBoard(){
+			board = JSON.parse(JSON.stringify(defaultData.board));
+			h_board.innerHTML = '';
+			for (var i = 0; i < board.length; i++) {
+				h_board.innerHTML += '<div class="tile"></div>';
+			}
+		}
+
+		function setupListener(){
+			h_coin.addEventListener('click', toss, true);
+			h_restart.addEventListener('click', restartGame);
+		}
+
+		function toss(){
+			h_coin.setAttribute('disabled', true);
+			var die = roll();
+			logging('tossing...');
+			setTimeout(function(){
+				if(die){
+					logging('head! :D')
+					setTimeout(function(){
+						player.piece.move();
+						rerender();
+						h_coin.removeAttribute('disabled');
+					}, 500);
+				}else{
+					logging('tail... :(')
+					h_coin.removeAttribute('disabled');
+				}
+			}, 1000);
+			// console.log(die)
+		}
+
+		function restartGame(){
+			player = JSON.parse(JSON.stringify(defaultData.player))
+			player.piece = new Piece({
+					position: -1
+				})
+			board = JSON.parse(JSON.stringify(defaultData.board))
+			h_coin.style.display = 'inline-block';
+			logging('toss the coin');
+			h_restart.style.display = 'none';
+		}
+
+		function roll(){
+			var res = Math.floor(Math.random()*2)+1;
+			if(res==1){
+				return false;
+			}else{
+				return true;
+			}
+		}
+
+		function rerender(){
+			h_board.innerHTML = '';
+			for (var i = 0; i < board.length; i++) {
+				if(board[i]){
+					h_board.innerHTML += '<div class="tile">'+board[i].ava+'</div>';
+				}else{
+					h_board.innerHTML += '<div class="tile"></div>';
+				}
+			}
+		}
+
+		function logging(msg){
+			h_logger.innerHTML = msg;
+		}
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	user-select: none;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+button {
+	cursor: pointer;
+}
+
+button[disabled] {
+	cursor: not-allowed;
+}
+
+.title {
+	text-align: center;
+}
+
+.game {
+	border: 1px solid;
+	width: 800px;
+	height: 600px;
+	display: none;
+}
+
+.board-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	height: 280px;
+	margin: 1rem 0;
+}
+
+.board-container .tile {
+	border: 1px solid #eee;
+	width: 90px;
+	height: 90px;
+}
+
+.board-container .tile.muted {
+	border: 1px solid #fff;
+}
+
+.board-container .tile.enemy-tile {
+	border: 1px solid red;
+}
+
+.board-container .tile.enemy-tile.finish {
+	border: 1px solid pink;
+}
+
+.board-container .tile.player-tile {
+	border: 1px solid blue;
+}
+
+.board-container .tile.player-tile.finish {
+	border: 1px solid lightblue;
+}
+
+.board-container .tile.rosette {
+	border: 1px solid gold;
+}
+
+.board-container .tile.highlight {
+	border: 1px solid green;
+}
+
+.piece {
+	background-color: green;
+	color: white;
+	border: 1px solid green;
+}
+
+.piece[disabled] {
+	background-color: lightgreen;
+}
+
+.roll-result {
+	border: 1px solid #ddd;
+}
+
+.moves {
+	border: 1px solid orange;
+}
